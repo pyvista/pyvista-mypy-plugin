@@ -1,0 +1,24 @@
+[project]
+name = "pyvista-mypy-plugin"
+version = "0.1dev0"
+description = "Mypy plugin for the PyVista project."
+dependencies = [
+  "mypy", "vtk", "pyvista"
+]
+requires-python = '>=3.9'
+keywords = ["mypy", "typing", "numpy"]
+license = {text = 'MIT'}
+readme = "README.md"
+
+[project.urls]
+Homepage = "https://github.com/pyvista/pyvista-mypy-plugin"
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-mypy-plugins", "pre-commit"]
+
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+addopts = '--mypy-only-local-stub'

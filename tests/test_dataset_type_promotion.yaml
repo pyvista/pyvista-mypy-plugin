@@ -1,0 +1,36 @@
+- case: DataSet_type_promotion
+  parametrized:
+    # Test that vtkDataSet is not a subtype of pyvista.DataSet
+    - plugin: ''
+      output: 'main:4: error: Incompatible types in assignment (expression has type "vtkDataSet", variable has type "DataSet")  [assignment]'
+      variable_type: DataSet
+      expression_type: vtkDataSet
+
+    # Same as above, but use the plugin.
+    - plugin: pyvista_mypy_plugin
+      output: 'main:4: error: Incompatible types in assignment (expression has type "vtkDataSet", variable has type "DataSet")  [assignment]'
+      variable_type: DataSet
+      expression_type: vtkDataSet
+
+    # Without the plugin, DataSet is not a subtype of vtkDataSet
+    - plugin: ''
+      output: 'main:4: error: Incompatible types in assignment (expression has type "DataSet", variable has type "vtkDataSet")  [assignment]'
+      variable_type: vtkDataSet
+      expression_type: DataSet
+
+    # With the plugin, DataSet is considered a subtype of vtkDataSet
+    - plugin: pyvista_mypy_plugin
+      output: ''
+      variable_type: vtkDataSet
+      expression_type: DataSet
+
+  mypy_config: |
+    plugins = {{ plugin }}
+    no_incremental = True
+  main: |
+    from pyvista import DataSet
+    from vtkmodules.vtkCommonDataModel import vtkDataSet
+    x: {{ variable_type }}
+    x = {{ expression_type }}()
+  out: |
+    {{ output }}
