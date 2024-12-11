@@ -6,7 +6,7 @@ dependencies = [
   "mypy", "vtk", "pyvista"
 ]
 requires-python = '>=3.9'
-keywords = ["mypy", "typing", "numpy"]
+keywords = ["mypy", "typing"]
 license = {text = 'MIT'}
 readme = "README.md"
 
