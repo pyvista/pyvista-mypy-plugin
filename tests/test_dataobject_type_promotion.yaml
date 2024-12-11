@@ -1,0 +1,37 @@
+- case: dataobject_type_promotion
+  parametrized:
+    # Test that vtk type is not a subtype of pyvista type
+    - plugin: ''
+      required_type: DataObject
+      object_type: vtkDataObject
+      output: 'main:5: error: Argument 1 to "foo" has incompatible type "vtkDataObject"; expected "DataObject"  [arg-type]'
+
+    # Same as above, but use the plugin.
+    - plugin: pyvista_mypy_plugin
+      required_type: DataObject
+      object_type: vtkDataObject
+      output: 'main:5: error: Argument 1 to "foo" has incompatible type "vtkDataObject"; expected "DataObject"  [arg-type]'
+
+    # Without the plugin, pyvista type is not a subtype of vtk type
+    - plugin: ''
+      required_type: vtkDataObject
+      object_type: DataObject
+      output: 'main:5: error: Argument 1 to "foo" has incompatible type "DataObject"; expected "vtkDataObject"  [arg-type]'
+
+    # With the plugin, pyvista type is considered a subtype of vtk type
+    - plugin: pyvista_mypy_plugin
+      required_type: vtkDataObject
+      object_type: DataObject
+      output: ''
+
+  mypy_config: |
+    plugins = {{ plugin }}
+    no_incremental = True
+  main: |
+    from pyvista import DataObject
+    from vtkmodules.vtkCommonDataModel import vtkDataObject
+    def foo(x: {{ required_type }}): ...
+    y: {{ object_type }}
+    foo(y)
+  out: |
+    {{ output }}

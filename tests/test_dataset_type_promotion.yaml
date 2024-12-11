@@ -1,36 +1,43 @@
-- case: DataSet_type_promotion
+- case: dataset_type_promotion
   parametrized:
-    # Test that vtkDataSet is not a subtype of pyvista.DataSet
+    # Test that vtk type is not a subtype of pyvista type
     - plugin: ''
-      output: 'main:4: error: Incompatible types in assignment (expression has type "vtkDataSet", variable has type "DataSet")  [assignment]'
-      variable_type: DataSet
-      expression_type: vtkDataSet
+      required_type: DataSet
+      object_type: vtkDataSet
+      output: 'main:5: error: Argument 1 to "foo" has incompatible type "vtkDataSet"; expected "DataSet"  [arg-type]'
 
     # Same as above, but use the plugin.
     - plugin: pyvista_mypy_plugin
-      output: 'main:4: error: Incompatible types in assignment (expression has type "vtkDataSet", variable has type "DataSet")  [assignment]'
-      variable_type: DataSet
-      expression_type: vtkDataSet
+      required_type: DataSet
+      object_type: vtkDataSet
+      output: 'main:5: error: Argument 1 to "foo" has incompatible type "vtkDataSet"; expected "DataSet"  [arg-type]'
 
-    # Without the plugin, DataSet is not a subtype of vtkDataSet
+    # Without the plugin, pyvista type is not a subtype of vtk type
     - plugin: ''
-      output: 'main:4: error: Incompatible types in assignment (expression has type "DataSet", variable has type "vtkDataSet")  [assignment]'
-      variable_type: vtkDataSet
-      expression_type: DataSet
+      required_type: vtkDataSet
+      object_type: DataSet
+      output: 'main:5: error: Argument 1 to "foo" has incompatible type "DataSet"; expected "vtkDataSet"  [arg-type]'
 
-    # With the plugin, DataSet is considered a subtype of vtkDataSet
+    # With the plugin, pyvista type is considered a subtype of vtk type
     - plugin: pyvista_mypy_plugin
+      required_type: vtkDataSet
+      object_type: DataSet
       output: ''
-      variable_type: vtkDataSet
-      expression_type: DataSet
+
+    # Check pyvista type works with parent of vtk type
+    - plugin: pyvista_mypy_plugin
+      required_type: vtkDataObject
+      object_type: DataSet
+      output: ''
 
   mypy_config: |
     plugins = {{ plugin }}
     no_incremental = True
   main: |
     from pyvista import DataSet
-    from vtkmodules.vtkCommonDataModel import vtkDataSet
-    x: {{ variable_type }}
-    x = {{ expression_type }}()
+    from vtkmodules.vtkCommonDataModel import vtkDataSet, vtkDataObject
+    def foo(x: {{ required_type }}): ...
+    y: {{ object_type }}
+    foo(y)
   out: |
     {{ output }}
