@@ -1,6 +1,6 @@
 [project]
 name = "pyvista-mypy-plugin"
-version = "0.1dev1"
+version = "0.2dev0"
 description = "Mypy plugin for the PyVista project."
 dependencies = [
   "mypy", "vtk", "pyvista"
