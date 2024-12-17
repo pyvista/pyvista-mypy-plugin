@@ -1,3 +1,3 @@
-from .mypy_plugin import plugin
+from .mypy_plugin import plugin, promote_type
 
-__all__ = ("plugin",)
+__all__ = ("plugin", "promote_type")
